@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+{% block title %}PaperMind — AI Research Paper Discovery{% endblock %}
+
+{% block content %}
+
+<!-- ══════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════ -->
+<section class="hero" aria-label="Hero section">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-blob hero-blob-1" aria-hidden="true"></div>
+  <div class="hero-blob hero-blob-2" aria-hidden="true"></div>
+
+  <div class="container">
+    <div class="row align-items-center gy-5">
+
+      <!-- Left: Copy + Search -->
+      <div class="col-lg-6 hero-content">
+        <div class="hero-eyebrow">
+          <span class="dot" aria-hidden="true"></span>
+          Powered by Groq LLM &amp; FAISS
+        </div>
+
+        <h1>
+          Discover research<br>
+          at the speed of<br>
+          <span class="gradient-text">thought</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Search millions of arXiv papers, process them with AI embeddings,
+          and ask questions in plain language. Research reimagined.
+        </p>
+
+        <!-- Search bar -->
+        <div class="hero-search-wrap">
+          <form action="{{ url_for('search') }}" method="GET" role="search">
+            <div class="hero-search">
+              <i class="bi bi-search search-icon" aria-hidden="true"></i>
+              <input
+                type="text"
+                name="query"
+                id="heroSearchInput"
+                placeholder="e.g. transformer attention mechanism…"
+                autocomplete="off"
+                aria-label="Search research papers"
+              />
+              <button type="submit" class="btn-search">
+                Search Papers <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Hint chips -->
+        <div class="search-hints" aria-label="Suggested searches">
+          <span>Try:</span>
+          <button class="hint-chip" type="button">Large Language Models</button>
+          <button class="hint-chip" type="button">Diffusion Models</button>
+          <button class="hint-chip" type="button">Graph Neural Networks</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row" role="list" aria-label="Key statistics">
+          <div class="stat-item" role="listitem">
+            <div class="stat-value">2M+</div>
+            <div class="stat-label">Papers indexed</div>
+          </div>
+          <div class="stat-divider" aria-hidden="true"></div>
+          <div class="stat-item" role="listitem">
+            <div class="stat-value">RAG</div>
+            <div class="stat-label">AI-powered Q&amp;A</div>
+          </div>
+          <div class="stat-divider" aria-hidden="true"></div>
+          <div class="stat-item" role="listitem">
+            <div class="stat-value">&lt;2s</div>
+            <div class="stat-label">Average response</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Visual mock -->
+      <div class="col-lg-6 hero-visual d-none d-lg-block">
+        <div class="hero-card-mock" role="presentation" aria-hidden="true">
+          <!-- Paper card mock -->
+          <div class="mock-header">
+            <span class="mock-dot" style="background:#EF4444;"></span>
+            <span class="mock-dot" style="background:#F59E0B;"></span>
+            <span class="mock-dot" style="background:#22C55E;"></span>
+            <span class="mock-tag"><i class="bi bi-stars"></i> arXiv</span>
+          </div>
+          <div class="mock-title">Attention Is All You Need: Transformer Architecture for NLP Tasks</div>
+          <div class="mock-authors">Vaswani, A. et al. · 2017</div>
+          <div class="mock-bar"><div class="mock-bar-fill" style="width:85%;"></div></div>
+          <div class="mock-bar"><div class="mock-bar-fill" style="width:60%;"></div></div>
+          <div class="mock-bar" style="margin-bottom:1rem;"><div class="mock-bar-fill" style="width:72%;"></div></div>
+
+          <!-- AI Q&A mock -->
+          <div class="mock-ai-bubble">
+            <strong style="font-size:.7rem;opacity:.8;display:block;margin-bottom:.35rem;">
+              <i class="bi bi-stars"></i> AI Assistant
+            </strong>
+            The self-attention mechanism allows the model to weigh the relevance of each word
+            in a sequence against all other words, enabling parallel computation…
+          </div>
+          <div class="mock-prompt">
+            💬 What is multi-head attention and why does it matter?
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════
+     FEATURES
+══════════════════════════════════════════════ -->
+<section class="page-section" aria-labelledby="features-heading">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-eyebrow">What PaperMind does</span>
+      <h2 class="section-title" id="features-heading">
+        Everything you need to<br>explore research, faster
+      </h2>
+      <p class="section-subtitle">
+        From discovery to deep analysis — a full pipeline powered by
+        state-of-the-art AI, built for researchers and builders.
+      </p>
+    </div>
+
+    <div class="row g-4">
+      <!-- Feature 1 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon fi-indigo"><i class="bi bi-search"></i></div>
+          <h3 class="feature-title">arXiv Search</h3>
+          <p class="feature-desc">
+            Query millions of preprints across computer science, physics, math, and more.
+            Real-time results straight from arXiv's open API.
+          </p>
+        </div>
+      </div>
+      <!-- Feature 2 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon fi-violet"><i class="bi bi-cpu"></i></div>
+          <h3 class="feature-title">Semantic Embeddings</h3>
+          <p class="feature-desc">
+            Papers are encoded into dense vectors using Sentence Transformers,
+            capturing meaning beyond simple keyword matching.
+          </p>
+        </div>
+      </div>
+      <!-- Feature 3 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon fi-cyan"><i class="bi bi-lightning-charge"></i></div>
+          <h3 class="feature-title">FAISS Vector Store</h3>
+          <p class="feature-desc">
+            Embeddings are indexed with Facebook's FAISS for sub-millisecond similarity
+            search across thousands of processed documents.
+          </p>
+        </div>
+      </div>
+      <!-- Feature 4 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon fi-green"><i class="bi bi-chat-dots"></i></div>
+          <h3 class="feature-title">RAG Q&amp;A</h3>
+          <p class="feature-desc">
+            Ask any question about a paper and get grounded, accurate answers via
+            Retrieval-Augmented Generation — no hallucinations.
+          </p>
+        </div>
+      </div>
+      <!-- Feature 5 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon fi-amber"><i class="bi bi-stars"></i></div>
+          <h3 class="feature-title">Groq LLM</h3>
+          <p class="feature-desc">
+            Ultra-fast inference powered by Groq's LPU hardware, delivering answers
+            in under two seconds — even for complex research questions.
+          </p>
+        </div>
+      </div>
+      <!-- Feature 6 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon fi-red"><i class="bi bi-file-earmark-pdf"></i></div>
+          <h3 class="feature-title">PDF Processing</h3>
+          <p class="feature-desc">
+            Download, chunk, and process any arXiv paper automatically.
+            One click turns a PDF into a fully queryable knowledge base.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════
+     HOW IT WORKS
+══════════════════════════════════════════════ -->
+<section class="page-section" aria-labelledby="how-heading">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-eyebrow">How it works</span>
+      <h2 class="section-title" id="how-heading">From search to answer<br>in three steps</h2>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-4 text-center">
+        <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 1.25rem;box-shadow:var(--shadow-primary);">
+          <i class="bi bi-search"></i>
+        </div>
+        <h4 style="font-size:1rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.5rem;">Search</h4>
+        <p style="font-size:.875rem;color:var(--text-secondary);line-height:1.65;">
+          Enter a topic or keyword. PaperMind queries arXiv and returns relevant papers instantly.
+        </p>
+      </div>
+      <div class="col-md-4 text-center">
+        <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--secondary),var(--accent));color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 1.25rem;box-shadow:0 8px 25px rgba(6,182,212,.25);">
+          <i class="bi bi-cpu"></i>
+        </div>
+        <h4 style="font-size:1rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.5rem;">Process</h4>
+        <p style="font-size:.875rem;color:var(--text-secondary);line-height:1.65;">
+          Click "Process Paper" to download, chunk, and embed the PDF into your personal vector store.
+        </p>
+      </div>
+      <div class="col-md-4 text-center">
+        <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--success));color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 1.25rem;box-shadow:0 8px 25px rgba(34,197,94,.25);">
+          <i class="bi bi-chat-dots"></i>
+        </div>
+        <h4 style="font-size:1rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.5rem;">Ask</h4>
+        <p style="font-size:.875rem;color:var(--text-secondary);line-height:1.65;">
+          Open the AI Assistant and ask anything. Get precise, cited answers from the paper's actual content.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════
+     CTA
+══════════════════════════════════════════════ -->
+<section class="page-section">
+  <div class="container">
+    <div class="cta-section">
+      <h2 class="cta-title">Ready to explore research differently?</h2>
+      <p class="cta-subtitle">
+        Start searching millions of papers and unlock AI-powered analysis in seconds.
+        No signup required.
+      </p>
+      <div class="d-flex gap-3 justify-content-center flex-wrap">
+        <a href="{{ url_for('search') }}" class="btn-cta-white">
+          <i class="bi bi-search"></i> Search Papers
+        </a>
+        <a href="{{ url_for('assistant') }}"
+           style="background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.3);border-radius:8px;padding:.75rem 1.75rem;font-size:.95rem;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none;"
+           onmouseover="this.style.background='rgba(255,255,255,.2)'"
+           onmouseout="this.style.background='rgba(255,255,255,.12)'">
+          <i class="bi bi-chat-dots"></i> Try AI Assistant
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

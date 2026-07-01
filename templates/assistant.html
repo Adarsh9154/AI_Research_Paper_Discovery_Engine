@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}AI Assistant — PaperMind{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block content %}
+
+<div class="assistant-layout">
+
+  <!-- Header -->
+  <header class="assistant-header">
+    <div class="assistant-header-info">
+      <div class="assistant-avatar" aria-hidden="true"><i class="bi bi-stars"></i></div>
+      <div>
+        <div class="assistant-name">PaperMind AI</div>
+        <div class="assistant-status">Ready</div>
+      </div>
+    </div>
+    <div class="assistant-header-actions">
+      {% if conversation %}
+      <button class="btn-icon" id="clearChatBtn"
+              title="Clear conversation" aria-label="Clear conversation">
+        <i class="bi bi-trash3"></i>
+      </button>
+      {% endif %}
+      <a href="{{ url_for('search') }}" class="btn-ghost" style="padding:.4rem .85rem;font-size:.82rem;">
+        <i class="bi bi-search"></i>
+        <span class="d-none d-sm-inline">Search Papers</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Chat area -->
+  <div class="chat-area" id="chatArea" role="log" aria-live="polite" aria-label="Conversation">
+
+    {% if not conversation %}
+    <!-- Empty state -->
+    <div class="chat-empty" id="chatEmpty">
+      <div class="chat-empty-icon" aria-hidden="true"><i class="bi bi-stars"></i></div>
+      <h2 class="chat-empty-title">Ask anything about your papers</h2>
+      <p class="chat-empty-desc">
+        Process a paper first, then ask questions here.
+        The AI will answer from the paper's actual content using RAG.
+      </p>
+      <div class="quick-prompts" role="list" aria-label="Suggested questions">
+        <button class="quick-prompt-btn" type="button" role="listitem">
+          What is the main contribution of this paper?
+        </button>
+        <button class="quick-prompt-btn" type="button" role="listitem">
+          Explain the methodology used.
+        </button>
+        <button class="quick-prompt-btn" type="button" role="listitem">
+          What datasets were used in experiments?
+        </button>
+        <button class="quick-prompt-btn" type="button" role="listitem">
+          What are the limitations of this work?
+        </button>
+        <button class="quick-prompt-btn" type="button" role="listitem">
+          Summarize the key findings.
+        </button>
+      </div>
+    </div>
+
+    {% else %}
+
+    <!-- Conversation history -->
+    {% for turn in conversation %}
+
+    <!-- User message -->
+    <div class="chat-message user">
+      <div>
+        <div class="msg-bubble user-bubble" role="article" aria-label="Your question">
+          {{ turn.question }}
+        </div>
+      </div>
+    </div>
+
+    <!-- AI message -->
+    <div class="chat-message assistant">
+      <div class="msg-avatar" aria-hidden="true"><i class="bi bi-stars"></i></div>
+      <div>
+        <div class="msg-bubble ai-bubble" role="article" aria-label="AI answer">
+          {{ turn.answer | safe }}
+        </div>
+        <div class="msg-actions" aria-label="Message actions">
+          <button class="msg-action-btn" type="button"
+                  data-copy="{{ turn.answer }}"
+                  aria-label="Copy answer">
+            <i class="bi bi-clipboard"></i> Copy
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {% endfor %}
+    {% endif %}
+
+    <!-- Typing indicator (hidden by default) -->
+    <div class="typing-indicator" id="typingIndicator" style="display:none;" aria-live="polite" aria-label="AI is thinking">
+      <div class="msg-avatar" aria-hidden="true"><i class="bi bi-stars"></i></div>
+      <div class="typing-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input area -->
+  <div class="chat-input-area">
+    <form id="chatForm" action="{{ url_for('ask_question') }}" method="POST"
+          aria-label="Ask a question">
+      <div class="chat-input-wrap">
+        <textarea
+          id="questionInput"
+          name="question"
+          rows="1"
+          placeholder="Ask a question about the processed paper…"
+          autocomplete="off"
+          aria-label="Your question"
+          maxlength="1000"
+          required
+        ></textarea>
+        <button type="submit" class="btn-send" id="sendBtn" aria-label="Send question">
+          <i class="bi bi-send-fill"></i>
+        </button>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.4rem;padding:0 .25rem;">
+        <span style="font-size:.72rem;color:var(--text-muted);">
+          <kbd style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:.1rem .35rem;font-size:.68rem;">Enter</kbd>
+          to send &nbsp;·&nbsp;
+          <kbd style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:.1rem .35rem;font-size:.68rem;">Shift+Enter</kbd>
+          for new line
+        </span>
+        {% if not conversation %}
+        <span style="font-size:.72rem;color:var(--text-muted);">
+          <a href="{{ url_for('search') }}" style="color:var(--primary);text-decoration:none;">
+            Process a paper first <i class="bi bi-arrow-right"></i>
+          </a>
+        </span>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Show typing indicator on form submit, disable send button
+(function () {
+  const form     = document.getElementById('chatForm');
+  const sendBtn  = document.getElementById('sendBtn');
+  const typing   = document.getElementById('typingIndicator');
+  const chatArea = document.getElementById('chatArea');
+  const emptyEl  = document.getElementById('chatEmpty');
+
+  if (!form) return;
+
+  form.addEventListener('submit', function () {
+    if (sendBtn)  sendBtn.disabled = true;
+    if (typing)   typing.style.display = 'flex';
+    if (emptyEl)  emptyEl.style.display = 'none';
+    if (chatArea) chatArea.scrollTop = chatArea.scrollHeight;
+  });
+})();
+
+// Clear chat button — confirm then POST
+(function () {
+  const btn = document.getElementById('clearChatBtn');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    if (confirm('Clear the entire conversation?')) {
+      const f = document.createElement('form');
+      f.method = 'POST';
+      f.action = '{{ url_for("clear_chat") }}';
+      document.body.appendChild(f);
+      f.submit();
+    }
+  });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}{{ paper.title[:60] }}… — PaperMind{% endblock %}
+
+{% block content %}
+
+<!-- ── Detail Hero ── -->
+<div class="detail-hero">
+  <div class="container">
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" class="mb-3">
+      <ol class="breadcrumb" style="font-size:.8rem;margin:0;">
+        <li class="breadcrumb-item">
+          <a href="{{ url_for('index') }}" style="color:var(--primary);text-decoration:none;">Home</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="{{ url_for('search') }}" style="color:var(--primary);text-decoration:none;">Search</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page" style="color:var(--text-muted);">Paper</li>
+      </ol>
+    </nav>
+
+    <!-- Badges -->
+    <div class="paper-meta-row mb-3">
+      <span class="badge-source"><i class="bi bi-journal-text me-1"></i>arXiv</span>
+      {% if paper.published %}
+        <span class="badge-year">
+          <i class="bi bi-calendar3 me-1"></i>{{ paper.published[:4] }}
+        </span>
+      {% endif %}
+    </div>
+
+    <!-- Title -->
+    <h1 class="detail-title">{{ paper.title }}</h1>
+
+    <!-- Authors -->
+    {% if paper.authors %}
+    <div class="paper-authors mt-2">
+      <i class="bi bi-people" aria-hidden="true"></i>
+      <span>
+        {{ paper.authors | join(', ') }}
+      </span>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ── Body ── -->
+<section class="page-section-sm">
+  <div class="container">
+    <div class="row g-4 align-items-start">
+
+      <!-- Left: Abstract -->
+      <div class="col-lg-8">
+        <div class="abstract-card animate-fade-up">
+          <h2><i class="bi bi-text-left"></i> Abstract</h2>
+          <p class="abstract-text">
+            {{ paper.summary or 'No abstract available for this paper.' }}
+          </p>
+        </div>
+
+        <!-- Process button (desktop) -->
+        <div class="mt-3 d-none d-lg-block animate-fade-up" style="animation-delay:.1s;">
+          <form action="{{ url_for('process_paper', paper_id=paper.id) }}" method="POST">
+            <input type="hidden" name="paper_title" value="{{ paper.title }}" />
+            <button type="submit" class="btn-primary-custom" style="padding:.7rem 1.75rem;font-size:.95rem;">
+              <i class="bi bi-cpu"></i>
+              Process Paper with AI
+            </button>
+            <p style="font-size:.78rem;color:var(--text-muted);margin-top:.6rem;">
+              Downloads the PDF, chunks it, and builds embeddings for Q&amp;A.
+            </p>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right: Metadata card -->
+      <div class="col-lg-4">
+        <div class="meta-card animate-fade-up" style="animation-delay:.05s;">
+
+          {% if paper.published %}
+          <div class="meta-item">
+            <div class="meta-icon"><i class="bi bi-calendar3"></i></div>
+            <div>
+              <div class="meta-label">Published</div>
+              <div class="meta-value">{{ paper.published[:10] }}</div>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if paper.authors %}
+          <div class="meta-item">
+            <div class="meta-icon"><i class="bi bi-people"></i></div>
+            <div>
+              <div class="meta-label">Authors</div>
+              <div class="meta-value" style="font-size:.85rem;">
+                {{ paper.authors | join(', ') }}
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if paper.id %}
+          <div class="meta-item">
+            <div class="meta-icon"><i class="bi bi-hash"></i></div>
+            <div>
+              <div class="meta-label">arXiv ID</div>
+              <div class="meta-value" style="font-family:monospace;font-size:.85rem;">{{ paper.id }}</div>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if paper.pdf_url %}
+          <div class="meta-item">
+            <div class="meta-icon" style="background:rgba(239,68,68,.08);color:var(--danger);">
+              <i class="bi bi-file-earmark-pdf"></i>
+            </div>
+            <div>
+              <div class="meta-label">PDF</div>
+              <a href="{{ paper.pdf_url }}" target="_blank" rel="noopener"
+                 class="meta-value" style="color:var(--primary);font-size:.875rem;text-decoration:none;">
+                Open PDF <i class="bi bi-box-arrow-up-right ms-1" style="font-size:.75rem;"></i>
+              </a>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if paper.entry_id or paper.id %}
+          <div class="meta-item">
+            <div class="meta-icon" style="background:rgba(6,182,212,.08);color:var(--accent);">
+              <i class="bi bi-link-45deg"></i>
+            </div>
+            <div>
+              <div class="meta-label">arXiv Page</div>
+              <a href="https://arxiv.org/abs/{{ paper.id }}" target="_blank" rel="noopener"
+                 class="meta-value" style="color:var(--primary);font-size:.875rem;text-decoration:none;">
+                View on arXiv <i class="bi bi-box-arrow-up-right ms-1" style="font-size:.75rem;"></i>
+              </a>
+            </div>
+          </div>
+          {% endif %}
+
+        </div>
+
+        <!-- Actions -->
+        <div class="d-flex flex-column gap-2 mt-3 animate-fade-up" style="animation-delay:.1s;">
+          <!-- Process Paper -->
+          <form action="{{ url_for('process_paper', paper_id=paper.id) }}" method="POST">
+            <input type="hidden" name="paper_title" value="{{ paper.title }}" />
+            <button type="submit" class="btn-primary-custom w-100" style="justify-content:center;padding:.7rem;">
+              <i class="bi bi-cpu"></i> Process with AI
+            </button>
+          </form>
+
+          <!-- Back to results -->
+          <a href="{{ url_for('search') }}" class="btn-ghost w-100" style="justify-content:center;padding:.65rem;">
+            <i class="bi bi-arrow-left"></i> Back to Search
+          </a>
+
+          <!-- AI Assistant -->
+          <a href="{{ url_for('assistant') }}" class="btn-secondary-custom w-100" style="justify-content:center;padding:.65rem;">
+            <i class="bi bi-chat-dots"></i> Open AI Assistant
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
