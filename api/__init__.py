@@ -1,0 +1,1 @@
+from .search_controller import search_bp
